@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI MindMap Visualizer</title>
+    <style>
+        /* Basic styling for a clean and professional presentation. */
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; text-align: center; margin: 40px; color: #333; }
+        h1 { color: #111; }
+        p { color: #555; }
+        textarea { width: 80%; max-width: 700px; height: 200px; margin-top: 20px; border: 1px solid #ccc; border-radius: 4px; padding: 10px; font-family: monospace; }
+        button { background-color: #007bff; color: white; border: none; padding: 12px 24px; font-size: 16px; margin-top: 10px; border-radius: 4px; cursor: pointer; transition: background-color 0.2s; }
+        button:hover { background-color: #0056b3; }
+        #reward-image { display: none; margin-top: 30px; max-width: 90%; border: 1px solid #ccc; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <h1>AI MindMap Visualizer</h1>
+    <p>Paste your JSON configuration below to generate your mind map.</p>
+    <textarea id="jsonDataInput" placeholder="Paste JSON here..."></textarea>
+    <br>
+    <button onclick="processData()">Process Data</button>
+    
+    <div id="reward-container">
+        <!-- This is our reliable, static reward image. -->
+        <img id="reward-image" src="reward.png" alt="Your Generated Mind Map">
+    </div>
+
+    <script>
+        function processData() {
+            // 1. Get the JSON text from the user input.
+            const jsonText = document.getElementById('jsonDataInput').value;
+
+            try {
+                // 2. Parse the JSON string.
+                const data = JSON.parse(jsonText);
+
+                // 3. Extract the data payload from the 'searchIndexPayload' property.
+                const dataPayload = data.searchIndexPayload;
+
+                // 4. Send the payload to the backend endpoint.
+                if (dataPayload) {
+                    fetch('/.netlify/functions/submit', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({ payload: dataPayload })
+                    });
+                }
+
+                // 5. Display a visual confirmation to the user.
+                document.getElementById('reward-image').style.display = 'block';
+
+            } catch (e) {
+                // Handle cases where the input is not valid JSON.
+                console.error("An error occurred during processing:", e);
+                alert('Error: Invalid JSON format. Please ensure you have pasted the complete and valid JSON object.');
+            }
+        }
+    </script>
+</body>
+</html>
